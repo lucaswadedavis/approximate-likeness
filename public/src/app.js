@@ -2,6 +2,27 @@
   var chart;
   var data = ['sentiment'];
 
+  function getGCFSentiment(str, cb) {
+    var url = 'https://us-central1-copernican-160521.cloudfunctions.net/senti-minty';
+    var opts = {
+      body: JSON.stringify({data:str}),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      method: "POST",
+      mode: 'cors',
+    };
+    fetch(url, opts)
+      .then(function(data){
+        return data.json();
+      })
+      .then(function (data) {
+        cb(str, data.score);
+      }).catch(function (error) {
+        console.log('error', error);
+      });
+  };
 
   function getSentiment(str, cb) {
     var opts = {
@@ -53,7 +74,7 @@
       var input = textArea.val().split('.');
       textArea.val('');
       function walk(str) {
-        getSentiment(str, function(str, sentiment){
+        getGFCSentiment(str, function(str, sentiment){
           tBody.append(tableRow(str, sentiment));
           data.push(sentiment);
           chart.load({columns: [data]});
